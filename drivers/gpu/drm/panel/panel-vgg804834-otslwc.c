@@ -20,9 +20,6 @@
 #include <drm/drm_mipi_dsi.h>
 #include <drm/drm_panel.h>
 
-#define H_PRO_OFF 30
-#define H_MULTI 4
-
 static const u32 otslw_bus_formats[] = {
 	MEDIA_BUS_FMT_RGB888_1X24,
 };
@@ -43,11 +40,11 @@ struct otslw_panel {
 };
 
 static const struct drm_display_mode default_mode = {
-	.clock = 30000 * H_MULTI,
+	.clock = 27500,
 	.hdisplay = 800,
-	.hsync_start = 800 * H_MULTI + (40 + H_PRO_OFF),
-	.hsync_end = 800 * H_MULTI + (40 + H_PRO_OFF) + (48 - H_PRO_OFF),
-	.htotal = 800 * H_MULTI + (40 + H_PRO_OFF) + (48 - H_PRO_OFF) + 40,
+	.hsync_start = 800 + (40),
+	.hsync_end = 800 + (40) + (48),
+	.htotal = 800 + (40) + (48) + 40,
 
 	.vdisplay = 480,
 	.vsync_start = 480 + (13),
