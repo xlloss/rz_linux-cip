@@ -13,7 +13,7 @@
 
 
 / {
-	model = "Renesas Gnk Board based on r9a07g044l2";
+	model = "Renesas GNK Board based on r9a07g044l2";
 	compatible = "renesas,smarc-gnk", "renesas,r9a07g044l2", "renesas,r9a07g044";
 };
 
