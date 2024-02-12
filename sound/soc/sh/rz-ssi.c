@@ -727,6 +727,16 @@ no_dma:
 	return -ENODEV;
 }
 
+void rz_ssi_software_reset(struct rz_ssi_priv *ssi)
+{
+	if ((ssi->playback.running == 0) && (ssi->capture.running == 0)) {
+		/* Soft Reset */
+		rz_ssi_reg_mask_setl(ssi, SSIFCR, 0, SSIFCR_SSIRST);
+		rz_ssi_reg_mask_setl(ssi, SSIFCR, SSIFCR_SSIRST, 0);
+		udelay(5);
+	}
+}
+
 static int rz_ssi_dai_trigger(struct snd_pcm_substream *substream, int cmd,
 			      struct snd_soc_dai *dai)
 {
@@ -736,13 +746,10 @@ static int rz_ssi_dai_trigger(struct snd_pcm_substream *substream, int cmd,
 
 	switch (cmd) {
 	case SNDRV_PCM_TRIGGER_START:
-		/* Soft Reset */
-		rz_ssi_reg_mask_setl(ssi, SSIFCR, 0, SSIFCR_SSIRST);
-		rz_ssi_reg_mask_setl(ssi, SSIFCR, SSIFCR_SSIRST, 0);
-		udelay(5);
 
 		rz_ssi_stream_init(strm, substream);
 
+		rz_ssi_software_reset(ssi);
 		if (ssi->dma_rt) {
 			bool is_playback;
 
