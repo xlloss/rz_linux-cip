@@ -354,8 +354,17 @@ static int rz_ssi_start(struct rz_ssi_priv *ssi, struct rz_ssi_stream *strm)
 			      SSISR_RUIRQ), 0);
 
 	strm->running = 1;
-	ssicr |= is_play ? SSICR_TEN : SSICR_REN;
-	rz_ssi_reg_writel(ssi, SSICR, ssicr);
+	/*
+	 * 27.6.1.5  Write Access Restriction
+	 *
+	 * (a) TEN Bit and REN Bit
+	 *     Set 1 at the same time when you use SSIF-2 as
+	 *     transmission and reception.
+	 */
+	if (is_play) {
+		ssicr |= (SSICR_TEN | SSICR_REN);
+		rz_ssi_reg_writel(ssi, SSICR, ssicr);
+	}
 
 	return 0;
 }
