@@ -858,6 +858,9 @@ static int rz_ssi_dai_hw_params(struct snd_pcm_substream *substream,
 		return -EINVAL;
 	}
 
+	if (ssi->playback.running || ssi->capture.running)
+		return 0;
+
 	return rz_ssi_clk_setup(ssi, params_rate(params),
 				params_channels(params));
 }
