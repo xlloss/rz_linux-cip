@@ -77,6 +77,8 @@
 #define SSI_CHAN_MAX		2
 #define SSI_FIFO_DEPTH		32
 
+#define FIFO_RESET_SET 1
+#define FIFO_RESET_CLR 0
 struct rz_ssi_priv;
 
 struct rz_ssi_stream {
@@ -241,6 +243,18 @@ static void rz_ssi_stream_quit(struct rz_ssi_priv *ssi,
 		dev_info(dai->dev, "underrun = %d\n", strm->uerr_num);
 }
 
+static void rz_ssi_reset_fifo(struct rz_ssi_priv *ssi, u8 reset, u8 txrx)
+{
+	u32 ssifcr;
+
+	ssifcr = rz_ssi_reg_readl(ssi, SSIFCR);
+
+	if (reset)
+		rz_ssi_reg_mask_setl(ssi, SSIFCR, 0, txrx);
+	else
+		rz_ssi_reg_mask_setl(ssi, SSIFCR, txrx, 0);
+}
+
 static int rz_ssi_clk_setup(struct rz_ssi_priv *ssi, unsigned int rate,
 			    unsigned int channels)
 {
@@ -297,8 +311,7 @@ static int rz_ssi_clk_setup(struct rz_ssi_priv *ssi, unsigned int rate,
 	ssicr |= SSICR_CKDV(clk_ckdv);
 	ssicr |= SSICR_DWL(1) | SSICR_SWL(3);
 	rz_ssi_reg_writel(ssi, SSICR, ssicr);
-	rz_ssi_reg_writel(ssi, SSIFCR,
-			  (SSIFCR_AUCKE | SSIFCR_TFRST | SSIFCR_RFRST));
+	rz_ssi_reg_writel(ssi, SSIFCR, SSIFCR_AUCKE);
 
 	return 0;
 }
@@ -309,7 +322,7 @@ static int rz_ssi_start(struct rz_ssi_priv *ssi, struct rz_ssi_stream *strm)
 	u32 ssicr, ssifcr;
 
 	ssicr = rz_ssi_reg_readl(ssi, SSICR);
-	ssifcr = rz_ssi_reg_readl(ssi, SSIFCR) & ~0xF;
+	ssifcr = rz_ssi_reg_readl(ssi, SSIFCR);
 
 	/* FIFO interrupt thresholds */
 	if (rz_ssi_is_dma_enabled(ssi))
@@ -322,10 +335,14 @@ static int rz_ssi_start(struct rz_ssi_priv *ssi, struct rz_ssi_stream *strm)
 	/* enable IRQ */
 	if (is_play) {
 		ssicr |= SSICR_TUIEN | SSICR_TOIEN;
-		ssifcr |= SSIFCR_TIE | SSIFCR_RFRST;
+		ssifcr |= SSIFCR_TIE;
+		rz_ssi_reset_fifo(ssi, FIFO_RESET_SET, SSIFCR_TFRST);
+		rz_ssi_reset_fifo(ssi, FIFO_RESET_CLR, SSIFCR_TFRST);
 	} else {
 		ssicr |= SSICR_RUIEN | SSICR_ROIEN;
-		ssifcr |= SSIFCR_RIE | SSIFCR_TFRST;
+		ssifcr |= SSIFCR_RIE;
+		rz_ssi_reset_fifo(ssi, FIFO_RESET_SET, SSIFCR_RFRST);
+		rz_ssi_reset_fifo(ssi, FIFO_RESET_CLR, SSIFCR_RFRST);
 	}
 
 	rz_ssi_reg_writel(ssi, SSICR, ssicr);
