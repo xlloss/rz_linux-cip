@@ -100,6 +100,7 @@
 #define QSPI			(0x3008)
 #define ETH_CH(n)		(0x300C + (n) * 4)
 
+#define ETH_MII_RGMII		(0x3018)
 #define PVDD_1800		1	/* I/O domain voltage <= 1.8V */
 #define PVDD_3300		0	/* I/O domain voltage >= 3.3V */
 #define ETH_PVDD_2500		BIT(1)	/* Ether I/O voltage 2.5V */
@@ -142,6 +143,11 @@
 #define TINT_MAX       32	/* Maximum 32 Interrupts can be supported */
 
 #define RZG2L_PIN_INFO(p, b)	(((p) << 16) | (b))
+#define ETH0 0
+#define ETH1 1
+#define ETH0_DT "ethernet@11c20000"
+#define ETH1_DT "ethernet@11c30000"
+#define MII_MODE 1
 static const int rzg2l_pin_info[] = {
 	RZG2L_PIN_INFO(0,  0), RZG2L_PIN_INFO(0,  1),
 	RZG2L_PIN_INFO(1,  0), RZG2L_PIN_INFO(1,  1),
@@ -333,6 +339,9 @@ static int rzg2l_pinctrl_set_mux(struct pinctrl_dev *pctldev,
 	struct group_desc *group;
 	int *pins;
 	u32 data;
+	struct device_node *np;
+	const char *phy_mod;
+	unsigned char ethdev, reg_mii_rgmii;
 
 	func = pinmux_generic_get_function(pctldev, func_selector);
 	if (!func)
@@ -353,6 +362,32 @@ static int rzg2l_pinctrl_set_mux(struct pinctrl_dev *pctldev,
 			RZG2L_PIN_ID_TO_PIN(pins[i]), psel_val[i]);
 	}
 
+	ethdev = 0;
+	np = of_find_node_by_name(NULL, "ethernet");
+	if (np) {
+		if (!strncmp(np->full_name, ETH0_DT, strlen(ETH0_DT)))
+			ethdev = ethdev | 1 << ETH0;
+
+		if (!strncmp(np->full_name, ETH1_DT, strlen(ETH1_DT)))
+			ethdev = ethdev | 1 << ETH1;
+	}
+
+	if (!ethdev)
+		return 0;
+
+	reg_mii_rgmii = readb(pctrl->base + ETH_MII_RGMII);
+
+	for (i = 0; i < 2; i++) {
+		if (ethdev & 1 << i) {
+			if (!of_property_read_string(np, "phy-mode", &phy_mod)) {
+				reg_mii_rgmii &= ~(MII_MODE << i);
+				if (!strncmp(phy_mod, "mii", strlen("mii")))
+					reg_mii_rgmii |= (MII_MODE << i);
+			}
+		}
+	}
+
+	writeb(reg_mii_rgmii, pctrl->base + ETH_MII_RGMII);
 	return 0;
 };
 
