@@ -106,10 +106,10 @@
 	phy-mode = "rgmii-id";
 	status = "okay";
 
-	phy0: ethernet-phy@7 {
-		compatible = "ethernet-phy-id0022.1640",
+	phy0: ethernet-phy@0 {
+		compatible = "ethernet-phy-id0022.1560",
 			     "ethernet-phy-ieee802.3-c22";
-		reg = <7>;
+		reg = <0>;
 		rxc-skew-psec = <2400>;
 		txc-skew-psec = <2400>;
 		rxdv-skew-psec = <0>;
@@ -122,9 +122,10 @@
 		txd1-skew-psec = <0>;
 		txd2-skew-psec = <0>;
 		txd3-skew-psec = <0>;
-
+#if 0
 		interrupt-parent = <&pinctrl>;
 		interrupts = <RZG2L_GPIO(5, 1) IRQ_TYPE_LEVEL_LOW>;
+#endif /* FATEK_TEST */
 	};
 };
 #endif

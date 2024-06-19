@@ -15,7 +15,7 @@
  * Please change below macros according to SW1 setting
  */
 #define SW_SW0_DEV_SEL	1
-#define SW_ET0_EN_N	1
+#define SW_ET0_EN_N	0
 #define	SW_CAN0_STB_PMOD	1
 #define	SW_CAN1_STB_PMOD	1
 #if (SW_CAN0_STB_PMOD ^ SW_CAN1_STB_PMOD)
