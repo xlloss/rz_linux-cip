@@ -45,43 +45,12 @@ static int cm7104_daiops_trigger(struct snd_pcm_substream *substream,
 	case SNDRV_PCM_TRIGGER_START:
 	case SNDRV_PCM_TRIGGER_RESUME:
 	case SNDRV_PCM_TRIGGER_PAUSE_RELEASE:
-		dev_info(component->dev, "START [cmd %d]\n", cmd);
+		dev_dbg(component->dev, "START [cmd %d]\n", cmd);
 		break;
 	case SNDRV_PCM_TRIGGER_STOP:
 	case SNDRV_PCM_TRIGGER_SUSPEND:
 	case SNDRV_PCM_TRIGGER_PAUSE_PUSH:
-		dev_info(component->dev, "STOP [cmd %d]\n", cmd);
-		break;
-	}
-
-	return 0;
-}
-
-static int cm7104_sdmode_event(struct snd_soc_dapm_widget *w,
-		struct snd_kcontrol *kcontrol, int event)
-{
-	struct snd_soc_component *component =
-		snd_soc_dapm_to_component(w->dapm);
-	struct cm7104_priv *cm7104 =
-		snd_soc_component_get_drvdata(component);
-
-	if (event & SND_SOC_DAPM_POST_PMU)
-		cm7104->sdmode_switch = 1;
-	else if (event & SND_SOC_DAPM_POST_PMD)
-		cm7104->sdmode_switch = 0;
-
-	return 0;
-}
-
-static int amic_aif_event(struct snd_soc_dapm_widget *w,
-			  struct snd_kcontrol *kcontrol, int event) {
-	/* struct snd_soc_component *component = snd_soc_dapm_to_component(w->dapm); */
-	/* struct cm7104_priv *cm7104 = snd_soc_component_get_drvdata(component); */
-
-	switch (event) {
-	case SND_SOC_DAPM_POST_PMU:
-		break;
-	case SND_SOC_DAPM_POST_PMD:
+		dev_dbg(component->dev, "STOP [cmd %d]\n", cmd);
 		break;
 	}
 
@@ -90,20 +59,12 @@ static int amic_aif_event(struct snd_soc_dapm_widget *w,
 
 static const struct snd_soc_dapm_widget cm7104_dapm_widgets[] = {
 	SND_SOC_DAPM_OUTPUT("Speaker"),
-	SND_SOC_DAPM_OUT_DRV_E("SD_MODE", SND_SOC_NOPM, 0, 0, NULL, 0,
-			cm7104_sdmode_event,
-			SND_SOC_DAPM_POST_PMU | SND_SOC_DAPM_POST_PMD),
-
 	SND_SOC_DAPM_INPUT("AMic"),
-	SND_SOC_DAPM_AIF_OUT_E("AIF", "Capture", 0,
-				SND_SOC_NOPM, 0, 0, amic_aif_event,
-				SND_SOC_DAPM_POST_PMU | SND_SOC_DAPM_POST_PMD),
 };
 
 static const struct snd_soc_dapm_route cm7104_dapm_routes[] = {
-	{"SD_MODE", NULL, "Playback"},
-	{"Speaker", NULL, "SD_MODE"},
-	{"AIF", NULL, "Capture"},
+	{"Speaker", NULL, "Playback"},
+	{"AMic", NULL, "Capture"},
 };
 
 static const struct snd_soc_component_driver cm7104_component_driver = {
@@ -157,7 +118,7 @@ static struct snd_soc_dai_driver cm7104_dai_driver = {
 static int cm7104_platform_probe(struct platform_device *pdev)
 {
 	struct cm7104_priv *cm7104;
-	pr_info("%s %d\n", __func__, __LINE__);
+
 	cm7104 = devm_kzalloc(&pdev->dev, sizeof(*cm7104), GFP_KERNEL);
 	if (!cm7104)
 		return -ENOMEM;
