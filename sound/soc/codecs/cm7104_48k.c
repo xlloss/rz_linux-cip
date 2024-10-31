@@ -73,16 +73,37 @@ static int cm7104_sdmode_event(struct snd_soc_dapm_widget *w,
 	return 0;
 }
 
+static int amic_aif_event(struct snd_soc_dapm_widget *w,
+			  struct snd_kcontrol *kcontrol, int event) {
+	/* struct snd_soc_component *component = snd_soc_dapm_to_component(w->dapm); */
+	/* struct cm7104_priv *cm7104 = snd_soc_component_get_drvdata(component); */
+
+	switch (event) {
+	case SND_SOC_DAPM_POST_PMU:
+		break;
+	case SND_SOC_DAPM_POST_PMD:
+		break;
+	}
+
+	return 0;
+}
+
 static const struct snd_soc_dapm_widget cm7104_dapm_widgets[] = {
 	SND_SOC_DAPM_OUTPUT("Speaker"),
 	SND_SOC_DAPM_OUT_DRV_E("SD_MODE", SND_SOC_NOPM, 0, 0, NULL, 0,
 			cm7104_sdmode_event,
 			SND_SOC_DAPM_POST_PMU | SND_SOC_DAPM_POST_PMD),
+
+	SND_SOC_DAPM_INPUT("AMic"),
+	SND_SOC_DAPM_AIF_OUT_E("AIF", "Capture", 0,
+				SND_SOC_NOPM, 0, 0, amic_aif_event,
+				SND_SOC_DAPM_POST_PMU | SND_SOC_DAPM_POST_PMD),
 };
 
 static const struct snd_soc_dapm_route cm7104_dapm_routes[] = {
-	{"SD_MODE", NULL, "HiFi Playback"},
+	{"SD_MODE", NULL, "Playback"},
 	{"Speaker", NULL, "SD_MODE"},
+	{"AIF", NULL, "Capture"},
 };
 
 static const struct snd_soc_component_driver cm7104_component_driver = {
@@ -103,7 +124,7 @@ static const struct snd_soc_dai_ops cm7104_dai_ops = {
 static struct snd_soc_dai_driver cm7104_dai_driver = {
 	.name = "CM7104-HiFi",
 	.playback = {
-		.stream_name	= "HiFi Playback",
+		.stream_name	= "Playback",
 		.formats	= SNDRV_PCM_FMTBIT_S16 |
 					SNDRV_PCM_FMTBIT_S24 |
 					SNDRV_PCM_FMTBIT_S32,
@@ -113,7 +134,24 @@ static struct snd_soc_dai_driver cm7104_dai_driver = {
 		.channels_min	= 1,
 		.channels_max	= 2,
 	},
+
+	.capture = {
+		.stream_name = "Capture",
+		.channels_min = 1,
+		.channels_max = 2,
+		.rates = SNDRV_PCM_RATE_CONTINUOUS,
+		.formats = SNDRV_PCM_FMTBIT_S32_LE
+			| SNDRV_PCM_FMTBIT_S24_LE
+			| SNDRV_PCM_FMTBIT_S16_LE,
+
+		.rates		= SNDRV_PCM_RATE_16000,
+		.rate_min	= 16000,
+		.rate_max	= 16000,
+	},
+
 	.ops    = &cm7104_dai_ops,
+
+
 };
 
 static int cm7104_platform_probe(struct platform_device *pdev)
