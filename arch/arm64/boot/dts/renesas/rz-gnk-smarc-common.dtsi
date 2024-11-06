@@ -216,7 +216,7 @@
 	status = "okay";
 
 	channel0 {
-		status = "okay";
+		status = "disabled";
 	};
 
 	channel1 {
