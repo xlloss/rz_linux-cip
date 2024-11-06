@@ -80,3 +80,7 @@
 &pwm_backlight {
 	status = "okay";
 };
+
+&spi1 {
+	status = "okay";
+};
