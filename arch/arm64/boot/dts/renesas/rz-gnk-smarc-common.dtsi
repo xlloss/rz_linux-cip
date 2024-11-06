@@ -34,6 +34,7 @@
  * amixer cset numid=174 off
  *
  */
+#define GNKBOARD 0
 
 / {
 	aliases {
@@ -139,11 +140,15 @@
 		simple-audio-card,mclk-fs = <256>;
 
 		cpu_dai: simple-audio-card,cpu {
+#if GNKBOARD
+			sound-dai = <&ssi1>;
+#else
 			sound-dai = <&ssi0>;
+#endif
 		};
 
 		codec_dai: simple-audio-card,codec {
-			sound-dai = <&codec_da7218>;
+			sound-dai = <&cm7104>;
 			clocks = <&audio_mclock>;
 		};
 	};
@@ -181,13 +186,19 @@
 		i2c-gpio,delay-us = <2>;
 		#address-cells = <1>;
 		#size-cells = <0>;
-		status = "okay";
+		status = "disabled";
 
 		vgg804834_ts: vgg804834_ts {
 			compatible = "rzg2l,touchscreen";
 			reg = <0x38>;
 			tsirq-gpios = <&pinctrl RZG2L_GPIO(47, 1) GPIO_ACTIVE_LOW>;
 		};
+	};
+
+	cm7104: cm7104 {
+		compatible = "cmedia,cm7104";
+		#sound-dai-cells = <0>;
+		status = "okay";
 	};
 };
 
@@ -372,7 +383,7 @@
 	dmas = <&dmac 0x2e99>, <&dmac 0x2e9a>;
 	dma-names = "tx", "rx";
 
-	status = "okay";
+	status = "disabled";
 };
 
 &pinctrl {
@@ -390,6 +401,13 @@
 			<RZG2L_PORT_PINMUX(45, 1, 1)>, /* RCK */
 			<RZG2L_PORT_PINMUX(45, 2, 1)>, /* TXD */
 			<RZG2L_PORT_PINMUX(45, 3, 1)>; /* RXD */
+	};
+
+	ssi1_pins: ssi1 {
+		pinmux = <RZG2L_PORT_PINMUX(14, 0, 2)>, /* BCK */
+			 <RZG2L_PORT_PINMUX(14, 1, 2)>, /* RCK */
+			 <RZG2L_PORT_PINMUX(15, 0, 2)>, /* TXD */
+			 <RZG2L_PORT_PINMUX(15, 1, 2)>; /* RXD */
 	};
 
 	eth0_pins: eth0 {
@@ -429,13 +447,23 @@
 	};
 };
 
+#if GNKBOARD
+&ssi1 {
+	pinctrl-0 = <&ssi1_pins &sound_clk_pins>;
+	pinctrl-names = "default";
+	//status = "disabled";
+	status = "okay";
+};
+#else
 &ssi0 {
 	pinctrl-0 = <&ssi0_pins &sound_clk_pins>;
 	pinctrl-names = "default";
 
+	//status = "okay";
 	status = "okay";
 };
 
+#endif
 &usb2_phy0 {
 	pinctrl-0 = <&usb0_pins>;
 	pinctrl-names = "default";
