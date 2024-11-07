@@ -58,7 +58,7 @@
 };
 
 &dsi0 {
-	status = "okay";
+	status = "disabled";
 };
 
 &csi2 {
