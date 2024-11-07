@@ -74,7 +74,7 @@
 };
 
 &panel {
-	status = "okay";
+	status = "disabled";
 };
 
 &pwm_backlight {
