@@ -220,7 +220,7 @@
 
 &pinctrl {
 	adc_pins: adc {
-		pinmux = <RZG2L_PORT_PINMUX(9, 0, 2)>; /* ADC_TRG */
+		pinmux = <RZG2L_PORT_PINMUX(42, 2, 1)>; /* ADC_TRG */
 	};
 
 	eth0_pins: eth0 {
