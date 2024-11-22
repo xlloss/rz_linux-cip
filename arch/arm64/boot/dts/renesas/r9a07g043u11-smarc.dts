@@ -47,13 +47,13 @@
 			linux,cma-default;
 			reusable;
 			/* 128MB is reserved for CMA */
-			reg = <0x0 0x50000000 0x0 0x8000000>;
+			reg = <0x0 0x5BFFFFFF 0x0 0x2000000>;
 		};
 		mmp_reserved: linux,multimedia {
 			compatible = "shared-dma-pool";
 			reusable;
 			/* 128MB is reserved for CMA */
-			reg = <0x00000000 0x58000000 0x0 0x8000000>;
+			reg = <0x00000000 0x5DFFFFFF 0x0 0x2000000>;
 		};
 	};
 
