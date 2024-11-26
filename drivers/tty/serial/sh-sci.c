@@ -158,6 +158,7 @@ struct sci_port {
 
 	bool has_rtscts;
 	bool autorts;
+	struct work_struct		work_queue;
 };
 
 #define SCI_NPORTS CONFIG_SERIAL_SH_SCI_NR_UARTS
@@ -1832,14 +1833,25 @@ static irqreturn_t sci_br_interrupt(int irq, void *ptr)
 	return IRQ_HANDLED;
 }
 
+static void sci_er_interrupt_work(struct work_struct *work)
+{
+	struct sci_port *s = container_of(work, struct sci_port, work_queue);
+
+	msleep(1);
+	enable_irq(s->irqs[SCIx_ERI_IRQ]);
+}
+
 static irqreturn_t sci_er_interrupt(int irq, void *ptr)
 {
 	struct uart_port *port = ptr;
 	struct sci_port *s = to_sci_port(port);
+	unsigned short ssr_status;
 
+	disable_irq_nosync(s->irqs[SCIx_ERI_IRQ]);
+	schedule_work(&s->work_queue);
 	if (s->irqs[SCIx_ERI_IRQ] == s->irqs[SCIx_BRI_IRQ]) {
 		/* Break and Error interrupts are muxed */
-		unsigned short ssr_status = serial_port_in(port, SCxSR);
+		ssr_status = serial_port_in(port, SCxSR);
 
 		/* Break Interrupt */
 		if (ssr_status & SCxSR_BRK(port))
@@ -2235,6 +2247,7 @@ static int sci_startup(struct uart_port *port)
 
 	sci_request_dma(port);
 
+	INIT_WORK(&s->work_queue, sci_er_interrupt_work);
 	ret = sci_request_irq(s);
 	if (unlikely(ret < 0)) {
 		sci_free_dma(port);
@@ -2277,6 +2290,7 @@ static void sci_shutdown(struct uart_port *port)
 
 	if (s->rx_trigger > 1 && s->rx_fifo_timeout > 0)
 		del_timer_sync(&s->rx_fifo_timer);
+	cancel_work_sync(&s->work_queue);
 	sci_free_irq(s);
 	sci_free_dma(port);
 }
