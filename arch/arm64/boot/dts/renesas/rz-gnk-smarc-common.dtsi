@@ -174,7 +174,7 @@
 	pwm_backlight: pwm_backlight{
 		compatible = "pwm-backlight";
 		status = "disabled";
-		pwms = <&gpt3 0 20000>;
+		pwms = <&gpt3 0 200>;
 		brightness-levels = <0 50 80 110 140 170 200 220 230 240 255>;
 		default-brightness-level = <10>;
 	};
@@ -504,7 +504,7 @@
 	panel: mipi_panel {
 		compatible = "evervision,vgg804834-otslwc";
 		reg = <0>;
-		reset-gpios = <&pinctrl RZG2L_GPIO(46, 0) GPIO_ACTIVE_LOW>;
+		/* reset-gpios = <&pinctrl RZG2L_GPIO(46, 0) GPIO_ACTIVE_LOW>; */
 		dsi-lanes = <2>;
 		backlight = <&pwm_backlight>;
 		status = "disabled";
@@ -629,8 +629,8 @@
 		vdddo-supply = <&ov5645_vdddo_1v8>;
 		vdda-supply = <&ov5645_vdda_2v8>;
 		vddd-supply = <&ov5645_vddd_1v5>;
-		enable-gpios = <&pinctrl RZG2L_GPIO(2, 0) GPIO_ACTIVE_HIGH>;
-		reset-gpios = <&pinctrl RZG2L_GPIO(40, 2) GPIO_ACTIVE_LOW>;
+		enable-gpios = <&pinctrl RZG2L_GPIO(23, 0) GPIO_ACTIVE_HIGH>;
+		reset-gpios = <&pinctrl RZG2L_GPIO(23, 1) GPIO_ACTIVE_LOW>;
 
 		port {
 			ov5645_to_csi: endpoint {
