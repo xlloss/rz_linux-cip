@@ -30,28 +30,29 @@
 		enable-gpios = <&pinctrl RZG2L_GPIO(47, 2) GPIO_ACTIVE_HIGH>;
 		power-supply = <&vdd_panel_3v3>;
 		/* panel-timing is used for "panel-dpi" compatible */
-		//panel-timing {
-		//	clock-frequency = <25200000>;
-		//	//clock-frequency = <10000000>;
-		//	hactive = <640>;
-		//	vactive = <480>;
-		//
-		//	hsync-len = <96>;
-		//	hfront-porch = <16>;
-		//	hback-porch = <48>;
-		//
-		//	vsync-len = <2>;
-		//	vfront-porch = <10>;
-		//	vback-porch = <33>;
-		//
-		//	hsync-active = <1>;
-		//	vsync-active = <1>;
-		//	de-active = <1>;
-		//	pixelclk-active = <1>;
-		//};
-
+#if 0
 		panel-timing {
-			clock-frequency = <65000000>;
+			clock-frequency = <25200000>;
+			//clock-frequency = <10000000>;
+			hactive = <640>;
+			vactive = <480>;
+
+			hsync-len = <96>;
+			hfront-porch = <16>;
+			hback-porch = <48>;
+
+			vsync-len = <2>;
+			vfront-porch = <10>;
+			vback-porch = <33>;
+
+			hsync-active = <1>;
+			vsync-active = <1>;
+			de-active = <1>;
+			pixelclk-active = <1>;
+		};
+#else
+		panel-timing {
+			clock-frequency = <70000000>;
 			hactive = <1024>;
 			vactive = <768>;
 
@@ -63,12 +64,12 @@
 			vfront-porch = <3>;
 			vback-porch = <29>;
 
-			hsync-active = <0>;
-			vsync-active = <0>;
-			de-active = <0>;
+			hsync-active = <1>;
+			vsync-active = <1>;
+			de-active = <1>;
 			pixelclk-active = <1>;
 		};
-
+#endif
 		port {
 			panel_in_rgb: endpoint {
 				remote-endpoint = <&du_out_rgb>;
