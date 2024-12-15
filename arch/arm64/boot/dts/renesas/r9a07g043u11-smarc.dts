@@ -14,7 +14,7 @@
 
 #if FATEK_MODIFY
 / {
-	model = "Renesas SMARC EVK based on r9a07g043u11 0227a slash";
+	model = "Renesas SMARC EVK based on r9a07g043u11 pwm test slash";
 	compatible = "renesas,smarc-evk", "renesas,r9a07g043u11", "renesas,r9a07g043";
 
 	memory@40200000 {
@@ -113,9 +113,13 @@
 				 <RZG2L_PORT_PINMUX(1,1,1)>, /* ET0_TX_CTL/TX_EN */
 				 <RZG2L_PORT_PINMUX(2,1,1)>; /* ET0_TX_ERR */
 	};
-	mtu3_pins: mtu3 {
-		pinmux = <RZG2L_PORT_PINMUX(9,0,5)>; /* MTIOC4A_B */
+	mtu3_mtioc4a_pins: mtu3_mtioc4a_pins {
+		pinmux = <RZG2L_PORT_PINMUX(9,0,5)>; /* MTIOC4A */
 	};
+	mtu3_mtioc6b_pins: mtu3_mtioc6b_pins {
+		pinmux = <RZG2L_PORT_PINMUX(10,1,5)>; /* MTIOC6B */
+	};
+
 	rspi2_pins: rspi2 {
 		pinmux = <RZG2L_PORT_PINMUX(7,0,3)>, /* RSPI2_CK_A */
 				 <RZG2L_PORT_PINMUX(7,2,3)>, /* RSPI2_MISO_A */
@@ -167,9 +171,10 @@
 	#endif /* FATEK_TEST */
 };
 &mtu3 {
-	pinctrl-0 = <&mtu3_pins>;
+	pinctrl-0 = <&mtu3_mtioc4a_pins>, <&mtu3_mtioc6b_pins>;
 	pinctrl-names = "default";
 	pwm_mode1 = <4 0>;
+	pwm_complementary = <6 1>;
 	#pwm-cells = <2>;
 
 	status = "okay";
