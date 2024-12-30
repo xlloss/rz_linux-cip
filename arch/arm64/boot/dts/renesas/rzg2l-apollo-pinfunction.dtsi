@@ -163,4 +163,8 @@
 			pinmux = <RZG2L_PORT_PINMUX(6, 0, 1)>; /* CLK */
 		};
 	};
+
+	adc_pins: adc {
+		pinmux = <RZG2L_PORT_PINMUX(42, 2, 1)>; /* ADC_TRG */
+	};
 };
