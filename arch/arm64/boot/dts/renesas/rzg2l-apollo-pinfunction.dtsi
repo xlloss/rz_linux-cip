@@ -2,7 +2,7 @@
 /*
  * Device Tree Source for the RZG2L APOLLO pincontrol parts
  *
- * Copyright (C) 2022 Regulus Corp.
+ * Copyright (C) 2024 Regulus Corp.
  */
 
 #include <dt-bindings/gpio/gpio.h>
