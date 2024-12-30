@@ -169,7 +169,7 @@
 	pwm_backlight: pwm_backlight{
 		compatible = "pwm-backlight";
 		status = "disabled";
-		pwms = <&gpt3 0 20000>;
+		pwms = <&gpt3 0 2000000>;
 		brightness-levels = <0 50 80 110 140 170 200 220 230 240 255>;
 		default-brightness-level = <10>;
 	};
