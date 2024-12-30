@@ -473,7 +473,7 @@
 		};
 	};
 
-	panel: mipi_panel {
+	mipi_panel: mipi_panel {
 		compatible = "evervision,vgg804834-otslwc";
 		reg = <0>;
 		reset-gpios = <&pinctrl RZG2L_GPIO(46, 0) GPIO_ACTIVE_LOW>;
