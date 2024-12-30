@@ -1,0 +1,18 @@
+// SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+/*
+ * Device Tree Source for the RZ/G2L Apollo board
+ *
+ * Copyright (C) 2024 Regulus Corp.
+ */
+
+/dts-v1/;
+#include "r9a07g044l2.dtsi"
+#include "rzg2l-smarc-som.dtsi"
+#include "rzg2l-smarc-pinfunction.dtsi"
+#include "rz-gnk-smarc-common.dtsi"
+
+
+/ {
+	model = "Renesas Apollo Board based on GNK";
+	compatible = "renesas,apollo", "renesas,r9a07g044l2", "renesas,r9a07g044";
+};
