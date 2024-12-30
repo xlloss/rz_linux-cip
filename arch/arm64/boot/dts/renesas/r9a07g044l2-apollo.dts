@@ -22,3 +22,7 @@
 		status = "disabled";
 	};
 };
+
+&scif1 {
+	status = "disabled";
+};
