@@ -314,6 +314,7 @@ static void rzg2l_mipi_dsi_set_display_timing(struct rzg2l_mipi_dsi *mipi_dsi)
 	if (mipi_dsi->mode_flags & MIPI_DSI_MODE_VIDEO_BURST)
 		vich1ppsetr &= ~VICH1PPSETR_TXESYNC_PULSE;
 
+	vich1ppsetr |= VICH1PPSETR_VC(0);
 	rzg2l_mipi_dsi_write(mipi_dsi->link_mmio, VICH1PPSETR, vich1ppsetr);
 
 	/* Configuration for Video Parameters */
