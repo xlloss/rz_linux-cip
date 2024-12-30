@@ -82,6 +82,10 @@
 	};
 };
 
+&i2c_gpio {
+	status = "disabled";
+};
+
 &canfd {
 	channel0 {
 		status = "disabled";
