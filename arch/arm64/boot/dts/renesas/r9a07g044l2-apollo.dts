@@ -34,3 +34,11 @@
 &pwm_backlight {
 	status = "okay";
 };
+
+&dsi0 {
+	status = "okay";
+};
+
+&mipi_panel {
+	status = "okay";
+};
