@@ -26,3 +26,11 @@
 &scif1 {
 	status = "disabled";
 };
+
+&gpt4 {
+	status = "okay";
+};
+
+&pwm_backlight {
+	status = "okay";
+};
