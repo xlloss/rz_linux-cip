@@ -143,7 +143,7 @@
 		};
 
 		codec_dai: simple-audio-card,codec {
-			sound-dai = <&codec_da7218>;
+			sound-dai = <&cm7104>;
 			clocks = <&audio_mclock>;
 		};
 	};
@@ -188,6 +188,12 @@
 			reg = <0x38>;
 			tsirq-gpios = <&pinctrl RZG2L_GPIO(47, 1) GPIO_ACTIVE_LOW>;
 		};
+	};
+
+	cm7104: cm7104 {
+		compatible = "cmedia,cm7104";
+		#sound-dai-cells = <0>;
+		status = "okay";
 	};
 };
 
@@ -274,47 +280,6 @@
 					<11289600>, <24000000>;
 		clock-divider-read-only = <1>, <1>, <1>, <1>, <1>;
 		clock-flags = <2176>, <2176>, <2176>, <2052>, <2176>, <2048>;
-	};
-
-	codec_da7218: codec_da7218@1a {
-		#address-cells = <1>;
-		#size-cells = <1>;
-		#sound-dai-cells = <0>;
-		compatible = "dlg,da7218";
-		reg = <0x1a>;
-
-		interrupt-parent = <&pinctrl>;
-		interrupts = <RZG2L_GPIO(47, 3) IRQ_TYPE_LEVEL_LOW>;
-		wakeup-source;
-
-		VDD-supply = <&vdd_1v8>;
-		VDDMIC-supply = <&vdd_3v3>;
-		VDDIO-supply = <&vdd_3v3>;
-
-		clocks = <&audio_mclock>;
-		clock-names = "mclk";
-
-		dlg,micbias1-lvl-millivolt = <2600>;
-
-		dlg,micbias2-lvl-millivolt = <2600>;
-		dlg,mic1-amp-in-sel = "diff";
-
-		dlg,mic2-amp-in-sel = "diff";
-
-		dlg,dmic1-data-sel = "lrise_rfall";
-		dlg,dmic1-samplephase = "on_clkedge";
-		dlg,dmic1-clkrate-hz = <3000000>;
-
-		dlg,dmic2-data-sel = "lrise_rfall";
-		dlg,dmic2-samplephase = "on_clkedge";
-		dlg,dmic2-clkrate-hz = <3000000>;
-
-		da7218_hpldet {
-			dlg,jack-rate-us = <40>;
-			dlg,jack-debounce = <2>;
-			dlg,jack-threshold-pct = <84>;
-			dlg,hyst;
-		};
 	};
 };
 
