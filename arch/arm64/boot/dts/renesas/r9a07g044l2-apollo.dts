@@ -51,3 +51,6 @@
 	status = "okay";
 };
 
+&i2c0 {
+	status = "okay";
+};
