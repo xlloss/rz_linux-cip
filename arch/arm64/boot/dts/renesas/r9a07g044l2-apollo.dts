@@ -16,3 +16,9 @@
 	model = "Renesas Apollo Board based on GNK";
 	compatible = "renesas,apollo", "renesas,r9a07g044l2", "renesas,r9a07g044";
 };
+
+&canfd {
+	channel0 {
+		status = "disabled";
+	};
+};
