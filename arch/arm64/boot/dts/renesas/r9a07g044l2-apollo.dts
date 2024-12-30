@@ -42,3 +42,12 @@
 &mipi_panel {
 	status = "okay";
 };
+
+&csi2 {
+	status = "okay";
+};
+
+&ov5645 {
+	status = "okay";
+};
+
