@@ -73,7 +73,7 @@
 	status = "okay";
 };
 
-&panel {
+&mipi_panel {
 	status = "okay";
 };
 
