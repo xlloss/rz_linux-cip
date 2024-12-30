@@ -1713,6 +1713,11 @@ config SND_SOC_ZX_AUD96P22
 	depends on I2C
 	select REGMAP_I2C
 
+config SND_SOC_CM7104_48K
+	tristate "CMedia CM7104 CODEC"
+	depends on ARCH_RZG2L
+	default y if ARCH_RZG2L=y
+
 # Amp
 config SND_SOC_LM4857
 	tristate
