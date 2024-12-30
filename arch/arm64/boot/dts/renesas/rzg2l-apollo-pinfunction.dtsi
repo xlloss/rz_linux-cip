@@ -52,4 +52,9 @@
 			 <RZG2L_PORT_PINMUX(48, 3, 1)>, /* CTS# */
 			 <RZG2L_PORT_PINMUX(48, 4, 1)>; /* RTS# */
 	};
+
+	i2c0_pins: i2c0 {
+		pins = "RIIC0_SDA", "RIIC0_SCL";
+		input-enable;
+	};
 };
