@@ -1,0 +1,5 @@
+0x00000000	vspm_get_status	/home/cadtc/host_share_folder/sdk50_build/rzv2h_sdk50_evk_alpha_build/tmp/work/rzv2h_evk_alpha-poky-linux/kernel-module-vspm/1.0-r0/git/vspm-module/files/vspm/drv/vspm	EXPORT_SYMBOL	
+0x00000000	vspm_quit_driver	/home/cadtc/host_share_folder/sdk50_build/rzv2h_sdk50_evk_alpha_build/tmp/work/rzv2h_evk_alpha-poky-linux/kernel-module-vspm/1.0-r0/git/vspm-module/files/vspm/drv/vspm	EXPORT_SYMBOL	
+0x00000000	vspm_cancel_job	/home/cadtc/host_share_folder/sdk50_build/rzv2h_sdk50_evk_alpha_build/tmp/work/rzv2h_evk_alpha-poky-linux/kernel-module-vspm/1.0-r0/git/vspm-module/files/vspm/drv/vspm	EXPORT_SYMBOL	
+0x00000000	vspm_entry_job	/home/cadtc/host_share_folder/sdk50_build/rzv2h_sdk50_evk_alpha_build/tmp/work/rzv2h_evk_alpha-poky-linux/kernel-module-vspm/1.0-r0/git/vspm-module/files/vspm/drv/vspm	EXPORT_SYMBOL	
+0x00000000	vspm_init_driver	/home/cadtc/host_share_folder/sdk50_build/rzv2h_sdk50_evk_alpha_build/tmp/work/rzv2h_evk_alpha-poky-linux/kernel-module-vspm/1.0-r0/git/vspm-module/files/vspm/drv/vspm	EXPORT_SYMBOL	
