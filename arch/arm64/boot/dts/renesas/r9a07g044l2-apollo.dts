@@ -97,7 +97,7 @@
 };
 
 &gpt4 {
-	status = "okay";
+	status = "disabled";
 };
 
 &pwm_backlight {
