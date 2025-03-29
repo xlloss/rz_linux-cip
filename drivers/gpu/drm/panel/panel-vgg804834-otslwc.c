@@ -40,20 +40,73 @@ struct otslw_panel {
 };
 
 static const struct drm_display_mode default_mode = {
-	.clock = 27500,
-	.hdisplay = 800,
-	.hsync_start = 800 + (40),
-	.hsync_end = 800 + (40) + (48),
-	.htotal = 800 + (40) + (48) + 40,
+//	.clock = 27500,
+//	.hdisplay = 800,
+//	.hsync_start = 800 + (40),
+//	.hsync_end = 800 + (40) + (48),
+//	.htotal = 800 + (40) + (48) + 40,
+//
+//	.vdisplay = 480,
+//	.vsync_start = 480 + (13),
+//	.vsync_end = 480 + (13) + (3),
+//	.vtotal = 480 + (13) + (3) + 29,
+//
+//	.width_mm = 200,
+//	.height_mm = 0,
 
-	.vdisplay = 480,
-	.vsync_start = 480 + (13),
-	.vsync_end = 480 + (13) + (3),
-	.vtotal = 480 + (13) + (3) + 29,
 
-	.width_mm = 200,
-	.height_mm = 0,
+//	.clock = 51450,
+//	.hdisplay = 1024,
+//	.hsync_start = 1024 + 156,
+//	.hsync_end = 1024 + 156 + 8,
+//	.htotal = 1024 + 156 + 8 + 156,
+//	.vdisplay = 600,
+//	.vsync_start = 600 + 16,
+//	.vsync_end = 600 + 16 + 6,
+//	.vtotal = 600 + 16 + 6 + 16,
+
+//	.clock = 51200,
+//	.hdisplay = 1024,
+//	.hsync_start = 1024 + 160,
+//	.hsync_end = 1024 + 160 + 4,
+//	.htotal = 1024 + 160 + 4 + 156,
+//	.vdisplay = 600,
+//	.vsync_start = 600 + 17,
+//	.vsync_end = 600 + 17 + 1,
+//	.vtotal = 600 + 17 + 1 + 17,
+
+	.clock = 49000,
+	.hdisplay = 1024,
+	.hsync_start = 1024 + 5,
+	.hsync_end = 1024 + 5 + 13,
+	.htotal = 1024 + 5 + 13 + 270,
+	.vdisplay = 600,
+	.vsync_start = 600 + 2,
+	.vsync_end = 600 + 2 + 3,
+	.vtotal = 600 + 2 + 3 + 17,
+
+//	.clock = 74250,
+//	.hdisplay = 1280,
+//	.hsync_start = 1280 + 110,
+//	.hsync_end = 1280 + 110 + 40,
+//	.htotal = 1280 + 110 + 40 + 220,
+//	.vdisplay = 720,
+//	.vsync_start = 720 + 5,
+//	.vsync_end = 720 + 5 + 5,
+//	.vtotal = 720 + 5 + 5 + 20,
+
+//	.clock = 79500,
+//	.hdisplay = 1280,
+//	.hsync_start = 1280 + 192,
+//	.hsync_end = 1280 + 192 + 128,
+//	.htotal = 1280 + 192 + 128 + 64,
+//	.vdisplay = 768,
+//	.vsync_start = 768 + 20,
+//	.vsync_end = 768 + 20 + 7,
+//	.vtotal = 768 + 20 + 7 + 3,
+
 	.type = DRM_MODE_TYPE_DRIVER | DRM_MODE_TYPE_PREFERRED,
+	.flags = DRM_MODE_FLAG_NVSYNC | DRM_MODE_FLAG_NHSYNC,
 };
 
 static inline struct otslw_panel *to_otslw_panel(struct drm_panel *panel)
@@ -68,13 +121,13 @@ static int otslw_panel_prepare(struct drm_panel *panel)
 	if (otslw->prepared)
 		return 0;
 
-	if (otslw->reset) {
-		gpiod_set_value_cansleep(otslw->reset, 1);
-		usleep_range(3000, 5000);
-		gpiod_set_value_cansleep(otslw->reset, 0);
-		usleep_range(18000, 20000);
-		gpiod_set_value_cansleep(otslw->reset, 1);
-	}
+	//if (otslw->reset) {
+	//	gpiod_set_value_cansleep(otslw->reset, 1);
+	//	usleep_range(3000, 5000);
+	//	gpiod_set_value_cansleep(otslw->reset, 0);
+	//	usleep_range(18000, 20000);
+	//	gpiod_set_value_cansleep(otslw->reset, 1);
+	//}
 
 	otslw->prepared = true;
 
@@ -218,6 +271,7 @@ static int otslw_panel_probe(struct mipi_dsi_device *dsi)
 	panel->dsi = dsi;
 	dsi->format = MIPI_DSI_FMT_RGB888;
 	dsi->mode_flags = MIPI_DSI_MODE_VIDEO | MIPI_DSI_MODE_VIDEO_BURST |
+			  /*MIPI_DSI_MODE_VIDEO_SYNC_PULSE |*/
 			  DRM_MODE_FLAG_NHSYNC | DRM_MODE_FLAG_NVSYNC;
 
 	ret = of_property_read_u32(np, "video-mode", &video_mode);
@@ -246,9 +300,9 @@ static int otslw_panel_probe(struct mipi_dsi_device *dsi)
 		return ret;
 	}
 
-	panel->reset = devm_gpiod_get_optional(dev, "reset", GPIOD_OUT_HIGH);
-	if (IS_ERR(panel->reset))
-		return PTR_ERR(panel->reset);
+	//panel->reset = devm_gpiod_get_optional(dev, "reset", GPIOD_OUT_HIGH);
+	//if (IS_ERR(panel->reset))
+	//	return PTR_ERR(panel->reset);
 
 	ret = otslw_init_regulators(panel);
 	if (ret)

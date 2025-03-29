@@ -27,9 +27,9 @@
 		regulator-min-microvolt = <3300000>;
 		regulator-max-microvolt = <3300000>;
 	};
-
+	#if 0
 	panel_rgb: panel-rgb {
-		status = "okay";
+		status = "disabled";
 		compatible = "panel-dpi";
 		backlight = <&pwm_backlight>;
 		enable-gpios = <&pinctrl RZG2L_GPIO(47, 2) GPIO_ACTIVE_HIGH>;
@@ -80,6 +80,7 @@
 			};
 		};
 	};
+	#endif
 };
 
 &i2c_gpio {
@@ -123,7 +124,7 @@
 &i2c0 {
 	status = "okay";
 };
-
+#if 0
 &du {
 	pinctrl-0 = <&du_pins>;
 	pinctrl-names = "default";
@@ -138,3 +139,4 @@
 		};
 	};
 };
+#endif
