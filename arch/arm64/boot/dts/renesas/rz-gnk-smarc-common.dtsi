@@ -437,17 +437,11 @@
 			};
 		};
 	};
-
-	mipi_panel: mipi_panel {
-		compatible = "evervision,vgg804834-otslwc";
+	/* for ep9593 dsi_to_hdmi bridge */
+	panel_dsi_fake: panel_dsi_fake {
+		status = "okay";
+		compatible = "fake,fake_dsi_panel";
 		reg = <0>;
-		reset-gpios = <&pinctrl RZG2L_GPIO(46, 0) GPIO_ACTIVE_LOW>;
-		dsi-lanes = <2>;
-		backlight = <&pwm_backlight>;
-		status = "disabled";
-		#address-cells = <1>;
-		#size-cells = <0>;
-
 		port {
 			panel_in: endpoint {
 				remote-endpoint = <&dsi0_out>;

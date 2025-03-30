@@ -4539,6 +4539,19 @@ static const struct drm_display_mode osd101t2045_53ts_mode = {
 	.flags = DRM_MODE_FLAG_NHSYNC | DRM_MODE_FLAG_NVSYNC,
 };
 
+static const struct drm_display_mode fake_dsi_mode = {
+	.clock = 49000,
+	.hdisplay = 1024,
+	.hsync_start = 1024 + 5,
+	.hsync_end = 1024 + 5 + 13,
+	.htotal = 1024 + 5 + 13 + 270,
+	.vdisplay = 600,
+	.vsync_start = 600 + 2,
+	.vsync_end = 600 + 2 + 3,
+	.vtotal = 600 + 2 + 3 + 17,
+	.flags = DRM_MODE_FLAG_NHSYNC | DRM_MODE_FLAG_NVSYNC,
+};
+
 static const struct panel_desc_dsi osd101t2045_53ts = {
 	.desc = {
 		.modes = &osd101t2045_53ts_mode,
@@ -4555,6 +4568,24 @@ static const struct panel_desc_dsi osd101t2045_53ts = {
 		 MIPI_DSI_MODE_EOT_PACKET,
 	.format = MIPI_DSI_FMT_RGB888,
 	.lanes = 4,
+};
+
+static const struct panel_desc_dsi fake_dsi_panel = {
+	.desc = {
+		.modes = &fake_dsi_mode,
+		.num_modes = 1,
+		.bpc = 8,
+		.size = {
+			.width = 0,
+			.height = 0,
+		},
+		.connector_type = DRM_MODE_CONNECTOR_DSI,
+	},
+	.flags = MIPI_DSI_MODE_VIDEO | MIPI_DSI_MODE_VIDEO_BURST |
+		 MIPI_DSI_MODE_VIDEO_SYNC_PULSE |
+		 MIPI_DSI_MODE_EOT_PACKET,
+	.format = MIPI_DSI_FMT_RGB888,
+	.lanes = 2,
 };
 
 static const struct of_device_id dsi_of_match[] = {
@@ -4579,6 +4610,9 @@ static const struct of_device_id dsi_of_match[] = {
 	}, {
 		.compatible = "osddisplays,osd101t2045-53ts",
 		.data = &osd101t2045_53ts
+	}, {
+		.compatible = "fake,fake_dsi_panel",
+		.data = &fake_dsi_panel
 	}, {
 		/* sentinel */
 	}
