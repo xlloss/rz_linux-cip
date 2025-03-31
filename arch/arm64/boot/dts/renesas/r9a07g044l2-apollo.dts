@@ -32,7 +32,7 @@
 		status = "disabled";
 		compatible = "panel-dpi";
 		backlight = <&pwm_backlight>;
-		enable-gpios = <&pinctrl RZG2L_GPIO(47, 2) GPIO_ACTIVE_HIGH>;
+		enable-gpios = <&pinctrl RZG2L_GPIO(47, 2) GPIO_ACTIVE_LOW>;
 		power-supply = <&vdd_panel_3v3>;
 		/* panel-timing is used for "panel-dpi" compatible */
 		#if ENABLE_PANEL_640_480_1024_768
