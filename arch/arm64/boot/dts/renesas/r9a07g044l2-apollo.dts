@@ -29,7 +29,7 @@
 	};
 
 	panel_rgb: panel_rgb {
-		status = "okay";
+		status = "disabled";
 		compatible = "panel-dpi";
 		backlight = <&pwm_backlight>;
 		enable-gpios = <&pinctrl RZG2L_GPIO(47, 2) GPIO_ACTIVE_LOW>;
@@ -105,7 +105,7 @@
 };
 
 &dsi0 {
-	status = "disabled";
+	status = "okay";
 };
 
 &csi2 {
