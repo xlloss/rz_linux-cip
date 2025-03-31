@@ -28,7 +28,7 @@
 		regulator-max-microvolt = <3300000>;
 	};
 
-	panel_rgb: panel-rgb {
+	panel_rgb: panel_rgb {
 		status = "okay";
 		compatible = "panel-dpi";
 		backlight = <&pwm_backlight>;
