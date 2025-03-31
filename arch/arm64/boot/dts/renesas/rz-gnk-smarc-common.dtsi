@@ -442,6 +442,7 @@
 		status = "okay";
 		compatible = "fake,fake_dsi_panel";
 		reg = <0>;
+		dsi-vc = <0x01>;
 		port {
 			panel_in: endpoint {
 				remote-endpoint = <&dsi0_out>;
