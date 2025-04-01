@@ -1,0 +1,61 @@
+// SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+/*
+ * Device Tree Source for the RZ/G2L Apollo board
+ *
+ * Copyright (C) 2024 Regulus Corp.
+ */
+
+/dts-v1/;
+#include "r9a07g044l2-apollo.dtsi"
+
+/ {
+	model = "Renesas Apollo Board LVDS 6.5 inch";
+	compatible = "renesas,apollo", "renesas,r9a07g044l2", "renesas,r9a07g044";
+
+	panel_rgb: panel_rgb {
+		status = "okay";
+		compatible = "panel-dpi";
+		backlight = <&pwm_backlight>;
+		enable-gpios = <&pinctrl RZG2L_GPIO(47, 2) GPIO_ACTIVE_LOW>;
+		power-supply = <&vdd_panel_3v3>;
+		/* panel-timing is used for "panel-dpi" compatible */
+		panel-timing {
+			clock-frequency = <25200000>;
+			hactive = <640>;
+			vactive = <480>;
+
+			hsync-len = <96>;
+			hfront-porch = <16>;
+			hback-porch = <48>;
+
+			vsync-len = <2>;
+			vfront-porch = <10>;
+			vback-porch = <33>;
+
+			hsync-active = <1>;
+			vsync-active = <1>;
+			de-active = <1>;
+			pixelclk-active = <1>;
+		};
+		port {
+			panel_in_rgb: endpoint {
+				remote-endpoint = <&du_out_rgb>;
+			};
+		};
+	};
+};
+
+&du {
+	pinctrl-0 = <&du_pins>;
+	pinctrl-names = "default";
+
+	status = "okay";
+
+	ports {
+		port@0 {
+			du_out_rgb: endpoint {
+				remote-endpoint = <&panel_in_rgb>;
+			};
+		};
+	};
+};

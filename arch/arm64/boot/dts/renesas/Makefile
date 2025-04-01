@@ -93,4 +93,6 @@ dtb-$(CONFIG_ARCH_R9A07G044) += r9a07g044l2-dev.dtb
 #dtb-$(CONFIG_ARCH_R9A07G054) += r9a07g054l2-smarc-gnk.dtb
 #dtb-$(CONFIG_ARCH_R9A07G044) += r9a07g044l2-smarc-gnk.dtb
 dtb-$(CONFIG_ARCH_R9A07G054) += r9a07g054l2-dev.dtb
-dtb-$(CONFIG_ARCH_R9A07G044) += r9a07g044l2-apollo.dtb
+dtb-$(CONFIG_ARCH_R9A07G044) += apollo_lvds_65.dtb
+dtb-$(CONFIG_ARCH_R9A07G044) += apollo_lvds_10.dtb
+dtb-$(CONFIG_ARCH_R9A07G044) += apollo_hdmi.dtb
