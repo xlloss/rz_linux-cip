@@ -423,7 +423,7 @@
 
 &dsi0 {
 	status = "disabled";
-	data-lanes = <1 2>;
+	data-lanes = <1 2 3 4>;
 
 	#address-cells = <1>;
 	#size-cells = <0>;
@@ -433,7 +433,7 @@
 			reg = <1>;
 			dsi0_out: endpoint {
 				remote-endpoint = <&panel_in>;
-				data-lanes = <1 2>;
+				data-lanes = <1 2 3 4>;
 			};
 		};
 	};
