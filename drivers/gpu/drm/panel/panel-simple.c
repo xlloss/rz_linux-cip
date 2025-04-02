@@ -110,6 +110,17 @@ struct panel_simple {
 
 	struct gpio_desc *enable_gpio;
 	struct gpio_desc *hpd_gpio;
+	/* select panel 6bit or 8bit
+	 *
+	 * LCD_10.4 Innolux G104XCE-L01
+	 *     Low     8 bit input
+	 *     High    6 bit input
+	 *
+	 * LCD_G065VN01
+	 *     Low     6 bit input;
+	 *     High    8 bit input.
+	 */
+	struct gpio_desc *sel_6_8_gpio;
 
 	struct drm_display_mode override_mode;
 
@@ -534,6 +545,15 @@ static int panel_simple_probe(struct device *dev, const struct panel_desc *desc)
 		err = PTR_ERR(panel->enable_gpio);
 		if (err != -EPROBE_DEFER)
 			dev_err(dev, "failed to request GPIO: %d\n", err);
+		return err;
+	}
+
+	panel->sel_6_8_gpio = devm_gpiod_get_optional(dev, "sel68",
+						     GPIOD_OUT_LOW);
+	if (IS_ERR(panel->sel_6_8_gpio)) {
+		err = PTR_ERR(panel->sel_6_8_gpio);
+		if (err != -EPROBE_DEFER)
+			dev_err(dev, "failed to request sel_6_8_gpio: %d\n", err);
 		return err;
 	}
 
