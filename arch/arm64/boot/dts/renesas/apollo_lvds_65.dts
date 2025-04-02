@@ -17,6 +17,8 @@
 		compatible = "panel-dpi";
 		backlight = <&pwm_backlight>;
 		enable-gpios = <&pinctrl RZG2L_GPIO(47, 2) GPIO_ACTIVE_LOW>;
+		/* default high 6bit */
+		sel68-gpios = <&pinctrl RZG2L_GPIO(40, 2) GPIO_ACTIVE_LOW>;
 		power-supply = <&vdd_panel_3v3>;
 		/* panel-timing is used for "panel-dpi" compatible */
 		panel-timing {
