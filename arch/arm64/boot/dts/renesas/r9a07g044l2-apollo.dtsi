@@ -55,6 +55,8 @@
 
 &ov5645 {
 	status = "okay";
+	enable-gpios = <&pinctrl RZG2L_GPIO(23, 0) GPIO_ACTIVE_HIGH>;
+	reset-gpios = <&pinctrl RZG2L_GPIO(23, 1) GPIO_ACTIVE_LOW>;
 };
 
 &i2c0 {
