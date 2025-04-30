@@ -25,6 +25,7 @@
 #include <sound/tlv.h>
 #include <asm/div64.h>
 
+#include <linux/debugfs.h>
 #include "wm8978.h"
 
 static const struct reg_default wm8978_reg_defaults[] = {
@@ -101,6 +102,7 @@ struct wm8978_priv {
 	unsigned int f_opclk;
 	int mclk_idx;
 	enum wm8978_sysclk_src sysclk;
+	struct dentry *debugfs_dir;
 };
 
 static const char *wm8978_companding[] = {"Off", "NC", "u-law", "A-law"};
@@ -136,6 +138,34 @@ static const DECLARE_TLV_DB_SCALE(inpga_tlv, -1200, 75, 0);
 static const DECLARE_TLV_DB_SCALE(spk_tlv, -5700, 100, 0);
 static const DECLARE_TLV_DB_SCALE(boost_tlv, -1500, 300, 1);
 static const DECLARE_TLV_DB_SCALE(limiter_tlv, 0, 100, 0);
+
+static ssize_t wm8978_dbg_write(struct file *file,
+				 const char __user *user_buf,
+				 size_t count, loff_t *ppos)
+{
+	int err;
+	u32 val, index;
+	#define REG_COUINT 57
+	struct snd_soc_component *component =
+		(struct snd_soc_component *)file->private_data;
+
+	err = kstrtouint_from_user(user_buf, count, 0, &val);
+	if (err < 0)
+		return err;
+
+	snd_soc_component_write(component, val >> 16, val & 0x0000FFFF);
+
+	for (index = 1; index < REG_COUINT; index++) {
+		val = snd_soc_component_read(component, index);
+		pr_info("wm8978 Reg index %d 0x%x\r\n", index, val);
+	}
+	return count;
+}
+
+static const struct file_operations wm8978_debugfs_fops = {
+	.open = simple_open,
+	.write = wm8978_dbg_write,
+};
 
 static const struct snd_kcontrol_new wm8978_snd_controls[] = {
 
@@ -974,6 +1004,8 @@ static int wm8978_probe(struct snd_soc_component *component)
 	struct wm8978_priv *wm8978 = snd_soc_component_get_drvdata(component);
 	int i;
 
+	char debugfs_name[10] = "wm8978_dbg";
+	struct dentry *debugfs_file;
 	/*
 	 * Set default system clock to PLL, it is more precise, this is also the
 	 * default hardware setting
@@ -988,6 +1020,12 @@ static int wm8978_probe(struct snd_soc_component *component)
 	for (i = 0; i < ARRAY_SIZE(update_reg); i++)
 		snd_soc_component_update_bits(component, update_reg[i], 0x100, 0x100);
 
+	if (wm8978->debugfs_dir) {
+		debugfs_file = debugfs_create_file(debugfs_name, 0444,
+							 wm8978->debugfs_dir,
+							 component,
+							 &wm8978_debugfs_fops);
+	}
 	return 0;
 }
 
@@ -1053,6 +1091,10 @@ static int wm8978_i2c_probe(struct i2c_client *i2c,
 		dev_err(&i2c->dev, "Failed to register CODEC: %d\n", ret);
 		return ret;
 	}
+
+	wm8978->debugfs_dir = debugfs_create_dir("wm8978_debugfs", NULL);
+	if (!wm8978->debugfs_dir)
+		pr_warn("Error creating debugfs dir for wm8978_debugfs\n");
 
 	return 0;
 }
