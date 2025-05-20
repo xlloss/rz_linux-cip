@@ -105,9 +105,9 @@ static struct snd_soc_dai_driver cm7104_dai_driver = {
 			| SNDRV_PCM_FMTBIT_S24_LE
 			| SNDRV_PCM_FMTBIT_S16_LE,
 
-		.rates		= SNDRV_PCM_RATE_16000,
-		.rate_min	= 16000,
-		.rate_max	= 16000,
+		.rates		= SNDRV_PCM_RATE_48000,
+		.rate_min	= 48000,
+		.rate_max	= 48000,
 	},
 
 	.ops    = &cm7104_dai_ops,
