@@ -616,10 +616,12 @@ static void sci_start_tx(struct uart_port *port)
 		 * (transmit interrupt enable) or in the same instruction to
 		 * start the transmitting process.
 		 */
-		if (s->is_rz_sci)
+		ctrl |= SCSCR_TIE;
+		serial_port_out(port, SCSCR, ctrl);
+		if (s->is_rz_sci) {
 			ctrl |= SCSCR_TE;
-
-		serial_port_out(port, SCSCR, ctrl | SCSCR_TIE);
+			serial_port_out(port, SCSCR, ctrl);
+		}
 	}
 }
 
@@ -627,13 +629,14 @@ static void sci_stop_tx(struct uart_port *port)
 {
 	unsigned short ctrl;
 
+	(port->type == PORT_SCI) ? udelay(200) : PORT_SCI;
 	/* Clear TIE (Transmit Interrupt Enable) bit in SCSCR */
 	ctrl = serial_port_in(port, SCSCR);
 
 	if (port->type == PORT_SCIFA || port->type == PORT_SCIFB)
 		ctrl &= ~SCSCR_TDRQE;
 
-	ctrl &= ~SCSCR_TIE;
+	(port->type == PORT_SCI) ? (ctrl &= ~SCSCR_TE) : (ctrl &= ~SCSCR_TIE);
 
 	serial_port_out(port, SCSCR, ctrl);
 
