@@ -523,7 +523,7 @@
 
 /* PMOD 0 */
 &spi1 {
-	status = "disabled";
+	status = "okay";
 	spidev0: spi@0 {
 		compatible = "rohm,dh2228fv";
 		reg = <0>;
