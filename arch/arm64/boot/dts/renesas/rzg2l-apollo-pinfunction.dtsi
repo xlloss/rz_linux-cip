@@ -172,4 +172,9 @@
 		pinmux = <RZG2L_PORT_PINMUX(0, 0, 2)>, /* RxD */
 			 <RZG2L_PORT_PINMUX(0, 1, 2)>; /* TxD */
 	};
+
+	scif3_pins: scif3 {
+		pinmux = <RZG2L_PORT_PINMUX(0, 0, 5)>,	/* TxD */
+			 <RZG2L_PORT_PINMUX(0, 1, 5)>;	/* RxD */
+	};
 };

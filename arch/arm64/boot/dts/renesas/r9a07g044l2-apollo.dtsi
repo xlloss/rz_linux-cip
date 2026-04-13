@@ -72,3 +72,9 @@
 	pinctrl-names = "default";
 	status = "disabled";
 };
+
+&scif3 {
+	pinctrl-0 = <&scif3_pins>;
+	pinctrl-names = "default";
+	status = "okay";
+};
