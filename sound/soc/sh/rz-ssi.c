@@ -63,6 +63,7 @@
 #define SSIFSR_RDF		BIT(0)
 
 #define SSIOFR_LRCONT		BIT(8)
+#define SSIOFR_BCKASTP		BIT(9)
 
 #define SSISCR_TDES(x)		(((x) & 0x1f) << 8)
 #define SSISCR_RDFS(x)		(((x) & 0x1f) << 0)
@@ -96,6 +97,8 @@ struct rz_ssi_stream {
 
 	struct dma_chan *dma_ch;
 
+	unsigned int params_rate;
+	unsigned int params_ch;
 	int (*transfer)(struct rz_ssi_priv *ssi, struct rz_ssi_stream *strm);
 };
 
@@ -271,7 +274,7 @@ static int rz_ssi_clk_setup(struct rz_ssi_priv *ssi, unsigned int rate,
 	rz_ssi_reg_writel(ssi, SSIFCR, 0);
 
 	/* Continue to output LRCK pin even when idle */
-	rz_ssi_reg_writel(ssi, SSIOFR, SSIOFR_LRCONT);
+	rz_ssi_reg_writel(ssi, SSIOFR, SSIOFR_LRCONT | SSIOFR_BCKASTP);
 	if (ssi->audio_clk_1 && ssi->audio_clk_2) {
 		if (ssi->audio_clk_1 % bclk_rate)
 			ssi->audio_mck = ssi->audio_clk_2;
@@ -361,10 +364,9 @@ static int rz_ssi_start(struct rz_ssi_priv *ssi, struct rz_ssi_stream *strm)
 	 *     Set 1 at the same time when you use SSIF-2 as
 	 *     transmission and reception.
 	 */
-	if (is_play) {
-		ssicr |= (SSICR_TEN | SSICR_REN);
-		rz_ssi_reg_writel(ssi, SSICR, ssicr);
-	}
+
+	ssicr |= (SSICR_TEN | SSICR_REN);
+	rz_ssi_reg_writel(ssi, SSICR, ssicr);
 
 	return 0;
 }
@@ -376,16 +378,21 @@ static int rz_ssi_stop(struct rz_ssi_priv *ssi, struct rz_ssi_stream *strm)
 	strm->running = 0;
 
 	/* Disable TX/RX */
-	rz_ssi_reg_mask_setl(ssi, SSICR, SSICR_TEN | SSICR_REN, 0);
+	if (!ssi->playback.running && !ssi->capture.running)
+		rz_ssi_reg_mask_setl(ssi, SSICR, SSICR_TEN | SSICR_REN, 0);
 
 	/* Cancel all remaining DMA transactions */
 	if (rz_ssi_is_dma_enabled(ssi))
 		dmaengine_terminate_async(strm->dma_ch);
 
 	/* Disable irqs */
-	rz_ssi_reg_mask_setl(ssi, SSICR, SSICR_TUIEN | SSICR_TOIEN |
-			     SSICR_RUIEN | SSICR_ROIEN, 0);
-	rz_ssi_reg_mask_setl(ssi, SSIFCR, SSIFCR_TIE | SSIFCR_RIE, 0);
+	if (rz_ssi_stream_is_play(ssi, strm->substream)) {
+		rz_ssi_reg_mask_setl(ssi, SSICR, SSICR_TUIEN | SSICR_TOIEN, 0);
+		rz_ssi_reg_mask_setl(ssi, SSIFCR, SSIFCR_TIE, 0);
+	} else {
+		rz_ssi_reg_mask_setl(ssi, SSICR, SSICR_RUIEN | SSICR_ROIEN, 0);
+		rz_ssi_reg_mask_setl(ssi, SSIFCR, SSIFCR_RIE, 0);
+	}
 
 	/* Clear all error flags */
 	rz_ssi_reg_mask_setl(ssi, SSISR,
@@ -752,6 +759,7 @@ static int rz_ssi_dai_trigger(struct snd_pcm_substream *substream, int cmd,
 	struct rz_ssi_priv *ssi = snd_soc_dai_get_drvdata(dai);
 	struct rz_ssi_stream *strm = rz_ssi_stream_get(ssi, substream);
 	int ret = 0, i, num_transfer = 1;
+	unsigned int read_ssiofr;
 
 	switch (cmd) {
 	case SNDRV_PCM_TRIGGER_START:
@@ -759,6 +767,9 @@ static int rz_ssi_dai_trigger(struct snd_pcm_substream *substream, int cmd,
 		rz_ssi_stream_init(strm, substream);
 
 		rz_ssi_software_reset(ssi);
+		if ((ssi->playback.running == 0) && (ssi->capture.running == 0))
+			rz_ssi_clk_setup(ssi, strm->params_rate, strm->params_ch);
+
 		if (ssi->dma_rt) {
 			bool is_playback;
 
@@ -783,11 +794,20 @@ static int rz_ssi_dai_trigger(struct snd_pcm_substream *substream, int cmd,
 				goto done;
 		}
 
+		/* enable bitclk here in this toming to avoid i2c fail */
+		read_ssiofr = rz_ssi_reg_readl(ssi, SSIOFR);
+		read_ssiofr &= ~(SSIOFR_BCKASTP);
+		rz_ssi_reg_writel(ssi, SSIOFR, read_ssiofr);
 		ret = rz_ssi_start(ssi, strm);
 		break;
 	case SNDRV_PCM_TRIGGER_STOP:
 		rz_ssi_stop(ssi, strm);
 		rz_ssi_stream_quit(ssi, strm);
+		if (!ssi->playback.running && !ssi->capture.running) {
+			read_ssiofr = rz_ssi_reg_readl(ssi, SSIOFR);
+			read_ssiofr |= (SSIOFR_BCKASTP);
+			rz_ssi_reg_writel(ssi, SSIOFR, read_ssiofr);
+		}
 		break;
 	}
 
@@ -855,6 +875,7 @@ static int rz_ssi_dai_hw_params(struct snd_pcm_substream *substream,
 					SNDRV_PCM_HW_PARAM_SAMPLE_BITS)->min;
 	unsigned int channels = params_channels(params);
 
+	struct rz_ssi_stream *strm = rz_ssi_stream_get(ssi, substream);
 	if (sample_bits != 16) {
 		dev_err(ssi->dev, "Unsupported sample width: %d\n",
 			sample_bits);
@@ -870,8 +891,9 @@ static int rz_ssi_dai_hw_params(struct snd_pcm_substream *substream,
 	if (ssi->playback.running || ssi->capture.running)
 		return 0;
 
-	return rz_ssi_clk_setup(ssi, params_rate(params),
-				params_channels(params));
+	strm->params_rate = params_rate(params);
+	strm->params_ch = params_channels(params);
+	return 0;
 }
 
 static const struct snd_soc_dai_ops rz_ssi_dai_ops = {
@@ -1064,6 +1086,8 @@ static int rz_ssi_probe(struct platform_device *pdev)
 		goto err_pm;
 	}
 
+	/* avoid bitclk output */
+	rz_ssi_reg_writel(ssi, SSIOFR, SSIOFR_BCKASTP);
 	ret = devm_snd_soc_register_component(&pdev->dev, &rz_ssi_soc_component,
 					      rz_ssi_soc_dai,
 					      ARRAY_SIZE(rz_ssi_soc_dai));
