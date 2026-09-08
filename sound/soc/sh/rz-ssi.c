@@ -399,17 +399,6 @@ static int rz_ssi_stop(struct rz_ssi_priv *ssi, struct rz_ssi_stream *strm)
 			     (SSISR_TOIRQ | SSISR_TUIRQ | SSISR_ROIRQ |
 			      SSISR_RUIRQ), 0);
 
-	/* Wait for idle */
-	timeout = 100;
-	while (--timeout) {
-		if (rz_ssi_reg_readl(ssi, SSISR) & SSISR_IIRQ)
-			break;
-		udelay(1);
-	}
-
-	if (!timeout)
-		dev_info(ssi->dev, "timeout waiting for SSI idle\n");
-
 	/* Hold FIFOs in reset */
 	rz_ssi_reg_mask_setl(ssi, SSIFCR, 0,
 			     SSIFCR_TFRST | SSIFCR_RFRST);
