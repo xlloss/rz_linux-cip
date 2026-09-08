@@ -137,13 +137,21 @@
 		simple-audio-card,bitclock-master = <&cpu_dai>;
 		simple-audio-card,frame-master = <&cpu_dai>;
 		simple-audio-card,mclk-fs = <256>;
+		simple-audio-card,widgets =
+			"Headphone", "Headphone Jack",
+			"Line", "Line In Jack";
+		simple-audio-card,routing =
+			"Headphone Jack", "LHP",
+			"Headphone Jack", "RHP",
+			"L2", "Line In Jack",
+			"R2", "Line In Jack";
 
 		cpu_dai: simple-audio-card,cpu {
 			sound-dai = <&ssi0>;
 		};
 
 		codec_dai: simple-audio-card,codec {
-			sound-dai = <&cm7104>;
+			sound-dai = <&nau8822>;
 			clocks = <&audio_mclock>;
 		};
 	};
@@ -190,11 +198,6 @@
 		};
 	};
 
-	cm7104: cm7104 {
-		compatible = "cmedia,cm7104";
-		#sound-dai-cells = <0>;
-		status = "okay";
-	};
 };
 
 &audio_clk1{
@@ -245,6 +248,12 @@
 	pinctrl-names = "default";
 
 	status = "okay";
+
+	nau8822: codec@1a {
+		compatible = "nuvoton,nau8822";
+		reg = <0x1a>;
+		#sound-dai-cells = <0>;
+	};
 };
 
 &i2c3 {
