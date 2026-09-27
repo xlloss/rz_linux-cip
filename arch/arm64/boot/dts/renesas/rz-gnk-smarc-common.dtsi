@@ -468,6 +468,7 @@
 	pinctrl-names = "default";
 	phy-handle = <&phy0>;
 	phy-mode = "rgmii-id";
+	renesas,no-ether-link;
 	status = "okay";
 
 	phy0: ethernet-phy@7 {
@@ -497,6 +498,7 @@
 	pinctrl-names = "default";
 	phy-handle = <&phy1>;
 	phy-mode = "rgmii-id";
+	renesas,no-ether-link;
 	status = "okay";
 
 	phy1: ethernet-phy@7 {
