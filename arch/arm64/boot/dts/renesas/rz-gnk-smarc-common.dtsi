@@ -354,7 +354,7 @@
 	pinctrl-names = "default";
 
 	uart-has-rtscts;
-	status = "okay";
+	status = "disabled";
 };
 
 &scif3 {
