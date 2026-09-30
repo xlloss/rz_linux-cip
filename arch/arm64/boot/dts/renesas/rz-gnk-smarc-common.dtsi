@@ -138,13 +138,21 @@
 		simple-audio-card,bitclock-master = <&cpu_dai>;
 		simple-audio-card,frame-master = <&cpu_dai>;
 		simple-audio-card,mclk-fs = <256>;
+		simple-audio-card,widgets =
+			"Headphone", "Headphone Jack",
+			"Line", "Line In Jack";
+		simple-audio-card,routing =
+			"Headphone Jack", "LHP",
+			"Headphone Jack", "RHP",
+			"L2", "Line In Jack",
+			"R2", "Line In Jack";
 
 		cpu_dai: simple-audio-card,cpu {
-			sound-dai = <&ssi0>;
+			sound-dai = <&ssi1>;
 		};
 
 		codec_dai: simple-audio-card,codec {
-			sound-dai = <&codec_da7218>;
+			sound-dai = <&nau8822>;
 			clocks = <&audio_mclock>;
 		};
 	};
@@ -247,6 +255,12 @@
 	pinctrl-names = "default";
 
 	status = "okay";
+
+	nau8822: codec@1a {
+		compatible = "nuvoton,nau8822";
+		reg = <0x1a>;
+		#sound-dai-cells = <0>;
+	};
 };
 
 &i2c3 {
@@ -289,6 +303,7 @@
 		#size-cells = <1>;
 		#sound-dai-cells = <0>;
 		compatible = "dlg,da7218";
+		status = "disabled";
 		reg = <0x1a>;
 
 		interrupt-parent = <&pinctrl>;
@@ -400,6 +415,13 @@
 			<RZG2L_PORT_PINMUX(45, 3, 1)>; /* RXD */
 	};
 
+	ssi1_pins: ssi1 {
+		pinmux = <RZG2L_PORT_PINMUX(14, 0, 2)>, /* BCK */
+			<RZG2L_PORT_PINMUX(14, 1, 2)>, /* RCK */
+			<RZG2L_PORT_PINMUX(15, 0, 2)>, /* TXD */
+			<RZG2L_PORT_PINMUX(15, 1, 2)>; /* RXD */
+	};
+
 	eth0_pins: eth0 {
 		pinmux = <RZG2L_PORT_PINMUX(28, 1, 1)>, /* ET0_LINKSTA */
 			 <RZG2L_PORT_PINMUX(27, 1, 1)>, /* ET0_MDC */
@@ -439,6 +461,13 @@
 
 &ssi0 {
 	pinctrl-0 = <&ssi0_pins &sound_clk_pins>;
+	pinctrl-names = "default";
+
+	status = "disabled";
+};
+
+&ssi1 {
+	pinctrl-0 = <&ssi1_pins &sound_clk_pins>;
 	pinctrl-names = "default";
 
 	status = "okay";
